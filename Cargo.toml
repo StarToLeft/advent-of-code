@@ -1,0 +1,17 @@
+[package]
+name = "advent-of-code"
+version = "0.1.0"
+authors = ["Anton Hagser <anton.hagser@epsidel.se>"]
+edition = "2018"
+
+[dependencies]
+chrono = "0.4"
+reqwest = { version = "0.10", features = ["json"] }
+tokio = { version = "0.2", features = ["full"] }
+rand = "0.7.3"
+threadpool = "1.8.1"
+regex = "1"
+itertools = "0.9.0"
+petgraph = "0.5.1"
+tuple_utils = "0.3.0"
+id_tree = "1.7.0"

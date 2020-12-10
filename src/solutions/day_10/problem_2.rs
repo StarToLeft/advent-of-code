@@ -1,8 +1,7 @@
-use std::convert::TryInto;
-
-use itertools::Itertools;
-
-use crate::{helper::parse, Solution};
+use crate::{
+    helper::{parse, prepend_slice},
+    Solution,
+};
 
 pub struct Problem2 {}
 
@@ -14,170 +13,95 @@ impl Problem2 {
 
 impl Solution for Problem2 {
     fn run(&mut self, data: &String) {
-        let data = parse("\n", data);
-        let mut input = vec![];
-        for d in data {
-            let x = d.parse::<i32>().unwrap();
-            input.push(x);
-        }
-        input.sort();
+        let input = parse("\n", data);
+        let mut input: Vec<usize> = input.iter().map(|s| s.parse().unwrap()).collect();
+        input.sort_unstable();
+        println!("Input: {:?}", input);
 
-        let mut sum = 0;
-        for perm in UniquePermutations::new(input) {
-            let mut p = vec![];
-            for c in perm.iter() {
-                p.push(c.to_owned());
-            }
-            if !is_sorted_rare(&p) {
-                continue;
-            }
-
-            let mut one_jolt_differences = 1;
-            let mut three_jolt_differences = 1;
-
-            let mut highest_outlet: u64 = 0;
-            let mut last_highest_outlet: u64 = 0;
-            for i in 0..p.len() {
-                let outlet = p[i];
-
-                // println!("Outlet: {}", outlet);
-
-                let mut higher = 0;
-                for _ in 0..3 {
-                    let mut found_higher = false;
-                    for y in i + 1..p.len() {
-                        if p[y] - outlet <= 3 && p[y] - outlet >= 1 {
-                            higher = y;
-                            found_higher = true;
-
-                            if p[y] - outlet == 1 {
-                                one_jolt_differences += 1;
-                            } else if p[y] - outlet == 3 {
-                                three_jolt_differences += 1;
-                            }
-                            break;
-                        }
-                    }
-
-                    if found_higher {
-                        break;
-                    }
-                }
-
-                if higher > highest_outlet.try_into().unwrap() {
-                    // highest_outlet = i;
-                } else if highest_outlet == last_highest_outlet {
-                    highest_outlet = outlet.to_owned().try_into().unwrap();
-                    sum += 1;
-                    break;
-                }
-
-                last_highest_outlet = highest_outlet;
-            }
-
-            println!(
-                "One {}, Two: {}",
-                one_jolt_differences, three_jolt_differences
-            );
-            println!("Highest outlet found {}", highest_outlet);
-            println!("Perm: {:?}", p);
+        let mut path: Vec<i64> = vec![];
+        unsafe { prepend_slice(&mut path, &[1]) };
+        unsafe { prepend_slice(&mut input, &[0]) };
+        for _ in 0..input.len() - 1 {
+            path.push(0);
         }
 
-        println!("Concluded that sum of all arrangements to be {}", sum);
+        for i in 0..input.len() {
+            let streak = input[i];
+            for x in 0..3 {
+                let cx = i + x + 1;
+                if cx <= input.len() - 1 && input[cx] - streak <= 3 {
+                    path[cx] += path[i];
+                }
+            }
+        }
+
+        println!("{:?}", path.get(path.len()-1).unwrap());
     }
 
     fn test(&mut self) {}
 }
 
-fn is_sorted_rare<I>(data: I) -> bool
-where
-    I: IntoIterator,
-    I::Item: Ord + Clone,
-{
-    data.into_iter().tuple_windows().all(|(a, b)| a <= b)
+pub fn get_differences(input: &mut Vec<i64>) -> Vec<i64> {
+    // ! Don't you dare remove this sort, it literally ducks it all up!
+    input.sort();
+
+    let mut differences = vec![];
+    let mut last = 0;
+    for i in 0..input.len() {
+        let difference = input[i] - last;
+        differences.push(difference);
+        last = input[i];
+    }
+
+    differences
 }
 
-use std::collections::btree_set::{BTreeSet, IntoIter};
+pub fn brute_force(differences: &Vec<i64>, total: i64) -> Vec<(i64, i64, i64)> {
+    let mut solutions = vec![];
 
-enum UniquePermutations {
-    Leaf {
-        elements: Option<Vec<i32>>,
-    },
-    Stem {
-        elements: Vec<i32>,
-        unique_elements: IntoIter<i32>,
-        first_element: i32,
-        inner: Box<Self>,
-    },
-}
-
-impl UniquePermutations {
-    fn new(elements: Vec<i32>) -> Self {
-        if elements.len() == 1 {
-            let elements = Some(elements);
-            Self::Leaf { elements }
-        } else {
-            let mut unique_elements = elements
-                .clone()
-                .into_iter()
-                .collect::<BTreeSet<_>>()
-                .into_iter();
-
-            let (first_element, inner) = Self::next_level(&mut unique_elements, elements.clone())
-                .expect("Must have at least one item");
-
-            Self::Stem {
-                elements,
-                unique_elements,
-                first_element,
-                inner,
+    let mut plausible = vec![];
+    for x in 1..15 {
+        for y in 1..15 {
+            for z in 1..15 {
+                plausible.push((x, z, y));
+                let t = test_total(differences, x, y, z);
+                if t == total {
+                    solutions.push((x, y, z));
+                }
             }
         }
     }
 
-    fn next_level(
-        mut unique_elements: impl Iterator<Item = i32>,
-        elements: Vec<i32>,
-    ) -> Option<(i32, Box<Self>)> {
-        let first_element = unique_elements.next()?;
-
-        let mut remaining_elements = elements;
-
-        if let Some(idx) = remaining_elements.iter().position(|&i| i == first_element) {
-            remaining_elements.remove(idx);
-        }
-
-        let inner = Box::new(Self::new(remaining_elements));
-
-        Some((first_element, inner))
-    }
+    solutions
 }
 
-impl Iterator for UniquePermutations {
-    type Item = Vec<i32>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        match self {
-            Self::Leaf { elements } => elements.take(),
-            Self::Stem {
-                elements,
-                unique_elements,
-                first_element,
-                inner,
-            } => loop {
-                match inner.next() {
-                    Some(mut v) => {
-                        v.insert(0, *first_element);
-                        return Some(v);
-                    }
-                    None => {
-                        let (next_fe, next_i) =
-                            Self::next_level(&mut *unique_elements, elements.clone())?;
-                        *first_element = next_fe;
-                        *inner = next_i;
-                    }
+pub fn test_total(differences: &Vec<i64>, x: i64, y: i64, z: i64) -> i64 {
+    let mut total = 1;
+    let mut streak = 0;
+    let mut total_streaks = vec![];
+    for i in 0..differences.len() - 1 {
+        if differences[i] == 1 && differences[i + 1] == 1 {
+            streak += 1;
+        } else {
+            match streak {
+                1 => {
+                    total *= 2;
                 }
-            },
+                2 => {
+                    total *= 4;
+                }
+                3 => {
+                    total *= 7;
+                }
+                _ => {
+                    total *= 1;
+                }
+            }
+
+            streak = 0;
         }
+        total_streaks.push(streak);
     }
+
+    total
 }

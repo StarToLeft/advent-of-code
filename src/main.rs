@@ -3,6 +3,9 @@ use chrono::prelude::*;
 use std::env;
 use std::fs;
 
+#[macro_use]
+extern crate colour;
+
 #[path = "./solutions/solutions.rs"]
 pub mod solutions;
 

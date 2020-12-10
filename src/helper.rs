@@ -132,3 +132,19 @@ impl StringUtils for str {
         &self[byte_start..byte_end]
     }
 }
+
+use std::ptr;
+
+pub unsafe fn prepend_slice<T: Copy>(vec: &mut Vec<T>, slice: &[T]) {
+    let len = vec.len();
+    let amt = slice.len();
+    vec.reserve(amt);
+
+    ptr::copy(vec.as_ptr(),
+              vec.as_mut_ptr().offset((amt) as isize),
+              len);
+    ptr::copy(slice.as_ptr(),
+              vec.as_mut_ptr(),
+              amt);
+    vec.set_len(len + amt);
+}

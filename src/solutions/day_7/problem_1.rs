@@ -81,8 +81,6 @@ impl Solution for Problem1 {
 
         println!("Bag colors {:?}", count);
     }
-
-    fn test(&mut self) {}
 }
 
 pub fn traverse_main(

@@ -37,6 +37,4 @@ impl Solution for Problem1 {
         println!("Jolt differences {:?}", scores);
         println!("Multiplied {}", scores.0 * scores.1);
     }
-
-    fn test(&mut self) {}
 }

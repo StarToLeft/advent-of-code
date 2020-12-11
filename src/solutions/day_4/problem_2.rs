@@ -88,6 +88,4 @@ impl Solution for Problem2 {
 
         println!("Counted {:?} passports", count);
     }
-
-    fn test(&mut self) {}
 }

@@ -30,6 +30,4 @@ impl Solution for Problem1 {
 
         println!("Highest seat id {:?}", seats.iter().max().unwrap());
     }
-
-    fn test(&mut self) {}
 }

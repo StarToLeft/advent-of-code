@@ -16,7 +16,6 @@ impl Solution for Problem2 {
         let input = parse("\n", data);
         let mut input: Vec<usize> = input.iter().map(|s| s.parse().unwrap()).collect();
         input.sort_unstable();
-        println!("Input: {:?}", input);
 
         let mut path: Vec<i64> = vec![];
         unsafe { prepend_slice(&mut path, &[1]) };
@@ -37,6 +36,4 @@ impl Solution for Problem2 {
 
         println!("{:?}", path.get(path.len()-1).unwrap());
     }
-
-    fn test(&mut self) {}
 }

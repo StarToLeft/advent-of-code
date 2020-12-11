@@ -49,6 +49,4 @@ impl Solution for Problem1 {
 
         println!("Invalid {}", invalid);
     }
-
-    fn test(&mut self) {}
 }

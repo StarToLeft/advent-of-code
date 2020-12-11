@@ -82,8 +82,6 @@ impl Solution for Problem2 {
 
         println!("Counted all bags {:?}", count);
     }
-
-    fn test(&mut self) {}
 }
 
 pub fn traverse_main(search: String, hash: &HashMap<String, Color>, count: &mut u32) {

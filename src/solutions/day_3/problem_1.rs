@@ -49,6 +49,4 @@ impl Solution for Problem1 {
 
         println!("Counted trees: {:?}", trees);
     }
-
-    fn test(&mut self) {}
 }

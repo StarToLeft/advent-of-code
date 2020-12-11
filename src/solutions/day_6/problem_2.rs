@@ -71,6 +71,4 @@ impl Solution for Problem2 {
 
         println!("Counted {:?} correct in all groups", ex_sum);
     }
-
-    fn test(&mut self) {}
 }

@@ -14,8 +14,6 @@ impl Solution for Problem1 {
         let input = parse("\n", data);
         println!("Accumulator: {}", try_stack(&input).1);
     }
-
-    fn test(&mut self) {}
 }
 
 pub fn try_stack(input: &Vec<String>) -> (bool, i32) {

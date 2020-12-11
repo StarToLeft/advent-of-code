@@ -33,8 +33,6 @@ impl Solution for Problem1 {
 
         println!("{:?}", valid);
     }
-
-    fn test(&mut self) {}
 } 
 
 fn count_chars(d: &str, c: String) -> u32 {

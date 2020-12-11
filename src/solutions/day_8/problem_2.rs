@@ -32,8 +32,6 @@ impl Solution for Problem2 {
             t = nops;
         }
     }
-
-    fn test(&mut self) {}
 }
 
 pub fn try_stack(input: &Vec<String>) -> (bool, i32) {

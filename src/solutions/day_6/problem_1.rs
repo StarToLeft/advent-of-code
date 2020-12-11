@@ -49,6 +49,4 @@ impl Solution for Problem1 {
 
         println!("All groups sum equaled {:?}", sum);
     }
-
-    fn test(&mut self) {}
 }

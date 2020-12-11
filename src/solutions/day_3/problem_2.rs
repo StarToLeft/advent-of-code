@@ -56,6 +56,4 @@ impl Solution for Problem2 {
 
         println!("{:?}", result)
     }
-
-    fn test(&mut self) {}
 }

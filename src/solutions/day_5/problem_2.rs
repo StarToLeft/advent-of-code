@@ -40,6 +40,4 @@ impl Solution for Problem2 {
             }
         }
     }
-
-    fn test(&mut self) {}
 }

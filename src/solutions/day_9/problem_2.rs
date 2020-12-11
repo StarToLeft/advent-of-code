@@ -72,6 +72,4 @@ impl Solution for Problem2 {
         assert_eq!(invalid, sum);
         println!("Sum of values {:?}", x[0] + x[x.len() - 1]);
     }
-
-    fn test(&mut self) {}
 }
